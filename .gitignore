@@ -1,0 +1,7 @@
+node_modules/
+postgres-data/
+.DS_Store
+.serverless/
+secrets.json
+.webpack/
+package-lock.json

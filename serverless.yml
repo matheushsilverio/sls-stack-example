@@ -1,0 +1,105 @@
+# This template is only for use the G4 Tech.
+
+service: MS-SERVERLESS-EXAMPLE
+
+plugins:
+  - serverless-offline
+  - serverless-bundle
+  - serverless-pseudo-parameters
+  - serverless-domain-manager
+provider:
+  name: aws
+  runtime: nodejs14.x
+  memorySize: 1024 # <- Set the memory application require (after run, check CloudWatch Logs and see memory realy used )
+  timeout: 10 # <- Time this micro service avaliable after first call
+  description: 'TEMPLATE SERVERLESS'
+  stage: ${opt:stage, 'local'} # <-- Change for PROD in secrets.json
+  region: us-east-1 # <- Region deploy this micro service
+  environment:
+    STAGE: ${opt:stage, 'local'}
+    DB_PORT: '5432'
+    DB_NAME: 'local'
+    DB_USER: 'admin'
+    DB_PASSWORD: 'admin'
+    DB_HOST_WRITE: 'localhost'
+    DB_HOST_READ: 'localhost'
+
+resources:
+  Resources:
+    # This response is needed for custom authorizer failures cors support ¯\_(ツ)_/¯
+    GatewayResponse:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+        StatusCode: '401'
+    AuthFailureGatewayResponse:
+      Type: 'AWS::ApiGateway::GatewayResponse'
+      Properties:
+        ResponseParameters:
+          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
+          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
+        ResponseType: DEFAULT_4XX
+        RestApiId:
+          Ref: 'ApiGatewayRestApi'
+        StatusCode: '401'
+functions: # <- Here the magic!
+  getAll:
+    handler: src/useCases/GetAllUsers/index.handler
+    description: Get All users
+    events:
+      - http:
+          path: /all # Path endpoint e.g. /users/all
+          method: GET # <-- GET | POST | PUT | DELETE | PATH
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowed-headers}
+            methods:
+              - OPTIONS
+              - GET # <-- Set equal method up
+            allowCredentials: false
+  create:
+    handler: src/useCases/CreateUser/index.handler
+    description: Create an user
+    events:
+      - http:
+          path: / # Path endpoint e.g. /users/all
+          method: POST # <-- GET | POST | PUT | DELETE | PATH
+          cors:
+            origin: '*'
+            headers: ${self:custom.allowed-headers}
+            methods:
+              - OPTIONS
+              - POST # <-- Set equal method up
+            allowCredentials: false
+
+custom:
+  allowed-headers:
+    - Content-Type
+    - X-Amz-Date
+    - Authorization
+    - X-Api-Key
+    - X-Amz-Security-Token
+    - X-Amz-User-Agent
+  EndPoint:
+    version: v1 # <-- Version API
+    name: example # <-- endpoint root e.g.: example
+    # Do not change from here below \ö/
+    domain: localhost
+  customDomain:
+    domainName: ${self:custom.EndPoint.domain}
+    certificateName: ${self:custom.EndPoint.domain}
+    basePath: ${self:provider.stage}/${self:custom.EndPoint.version}/${self:custom.EndPoint.name}
+    stage: ${self:provider.stage}
+    endpointType: regional
+    securityPolicy: tls_1_2
+    apiType: rest
+    createRoute53Record: false
+  bundle:
+    ignorePackages:
+      - pg-native # <-- Necessarie because package pgSql not imported in build project
+    linting: false # <-- CHANGE TRUE IN MODE PROD

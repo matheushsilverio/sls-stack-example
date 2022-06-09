@@ -1,8 +1,13 @@
-ms-users/node_modules/
-ms-users/postgres-data/
-ms-users/.DS_Store
-ms-users/.serverless/
-ms-users/secrets.json
-ms-users/.webpack/
-ms-users/package-lock.json
+ms-movies/node_modules/
+ms-movies/postgres-data/
+ms-movies/.DS_Store
+ms-movies/.serverless/
+ms-movies/.webpack/
+ms-movies/package-lock.json
 
+site/node_modules/
+site/.DS_Store
+site/.webpack/
+site/package-lock.json
+
+postgres-data

@@ -2,7 +2,7 @@ version: '3'
 services:
   pgadmin-compose:
     image: dpage/pgadmin4
-    container_name: pgadmin_container
+    container_name: pgadmin
     environment:
       PGADMIN_DEFAULT_EMAIL: 'user@admin.com'
       PGADMIN_DEFAULT_PASSWORD: 'admin'
@@ -14,7 +14,7 @@ services:
     networks:
       - postgres-compose-network
   postgres:
-    container_name: postgres_container
+    container_name: postgres
     image: postgres
     environment:
       POSTGRES_USER: 'user@admin.com'
@@ -28,6 +28,14 @@ services:
     restart: always
     networks:
       - postgres-compose-network
+  site:
+    container_name: site
+    build:
+      context: ./site
+      dockerfile: DockerFile
+    image: site:tag
+    ports:
+      - '80:80'
 networks:
   postgres-compose-network:
     driver: bridge

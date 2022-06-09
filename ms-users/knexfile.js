@@ -5,16 +5,19 @@
  */
 module.exports = {
   development: {
-    client: 'mysql',
+    client: 'pg',
     connection: {
-      user: 'admin',
+      user: 'user@admin.com',
       password: 'admin',
       host: 'localhost',
-      port: 3306,
+      port: 5432,
       database: 'local',
     },
     migrations: {
       directory: __dirname + '/src/data/migrations',
+    },
+    seeds: {
+      directory: __dirname + '/src/data/seeds',
     },
   },
 };

@@ -15,14 +15,11 @@ provider:
   region: us-east-1 # <- Region deploy this micro service
   environment:
     STAGE: ${opt:stage, 'local'}
-    DATABASE_PORT: 3306
+    DATABASE_PORT: 5432
     DATABASE_NAME: 'local'
-    DATABASE_USERNAME: 'admin'
+    DATABASE_USERNAME: 'user@admin.com'
     DATABASE_PASSWORD: 'admin'
     DATABASE_HOST: 'localhost'
-    DATABASE_POOL_MIN: 0
-    DATABASE_POOL_MAX: 100
-    DATABASE_POOL_IDLE: 10000
 
 resources:
   Resources:
@@ -47,12 +44,12 @@ resources:
           Ref: 'ApiGatewayRestApi'
         StatusCode: '401'
 functions: # <- Here the magic!
-  getAll:
-    handler: src/useCases/GetAllUsers/index.handler
-    description: Get All users
+  getAllByCategory:
+    handler: src/useCases/GetAllByCategory/index.handler
+    description: get
     events:
       - http:
-          path: /all # Path endpoint e.g. /users/all
+          path: /categories/{category} # Path endpoint e.g. /users/all
           method: GET # <-- GET | POST | PUT | DELETE | PATH
           cors:
             origin: '*'
@@ -61,19 +58,19 @@ functions: # <- Here the magic!
               - OPTIONS
               - GET # <-- Set equal method up
             allowCredentials: false
-  create:
-    handler: src/useCases/CreateUser/index.handler
-    description: Create an user
+  getById:
+    handler: src/useCases/GetById/index.handler
+    description: get
     events:
       - http:
-          path: / # Path endpoint e.g. /users/all
-          method: POST # <-- GET | POST | PUT | DELETE | PATH
+          path: /{movieId} # Path endpoint e.g. /users/all
+          method: GET # <-- GET | POST | PUT | DELETE | PATH
           cors:
             origin: '*'
             headers: ${self:custom.allowed-headers}
             methods:
               - OPTIONS
-              - POST # <-- Set equal method up
+              - GET # <-- Set equal method up
             allowCredentials: false
 
 custom:
@@ -85,9 +82,8 @@ custom:
     - X-Amz-Security-Token
     - X-Amz-User-Agent
   EndPoint:
-    version: v1 # <-- Version API
-    name: example # <-- endpoint root e.g.: example
-    # Do not change from here below \ö/
+    version: v1
+    name: example
     domain: localhost
   customDomain:
     domainName: ${self:custom.EndPoint.domain}

@@ -1,32 +1,33 @@
 version: '3'
 services:
-  localstack:
-    container_name: localstack_container
-    image: localstack/localstack:latest
+  pgadmin-compose:
+    image: dpage/pgadmin4
+    container_name: pgadmin_container
+    environment:
+      PGADMIN_DEFAULT_EMAIL: 'user@admin.com'
+      PGADMIN_DEFAULT_PASSWORD: 'admin'
     ports:
-      - '4566:4566'
-    environment:
-      - EDGE_PORT=4566
-      - DOCKER_HOST=unix:///var/run/docker.sock
-      - SERVICES=sqs
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-  mysql:
-    image: mysql:latest
-    container_name: dev_mysql
-    environment:
-      MYSQL_USER: admin
-      MYSQL_PASSWORD: admin
-      MYSQL_DATABASE: local
-  phpmyadmin:
-    image: phpmyadmin/phpmyadmin
-    container_name: dev_pma
-    links:
-      - mysql
-    environment:
-      PMA_HOST: mysql
-      PMA_PORT: 3306
-      PMA_ARBITRARY: 1
+      - '15432:80'
     restart: always
+    depends_on:
+      - postgres
+    networks:
+      - postgres-compose-network
+  postgres:
+    container_name: postgres_container
+    image: postgres
+    environment:
+      POSTGRES_USER: 'user@admin.com'
+      POSTGRES_PASSWORD: 'admin'
+      POSTGRES_DB: 'local'
+      PGDATA: /data/postgres
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
     ports:
-      - 8183:80
+      - '5432:5432'
+    restart: always
+    networks:
+      - postgres-compose-network
+networks:
+  postgres-compose-network:
+    driver: bridge

@@ -1,7 +1,8 @@
-node_modules/
-postgres-data/
-.DS_Store
-.serverless/
-secrets.json
-.webpack/
-package-lock.json
+ms-users/node_modules/
+ms-users/postgres-data/
+ms-users/.DS_Store
+ms-users/.serverless/
+ms-users/secrets.json
+ms-users/.webpack/
+ms-users/package-lock.json
+

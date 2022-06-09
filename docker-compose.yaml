@@ -1,16 +1,14 @@
-version: "3"
+version: '3'
 services:
   localstack:
     container_name: localstack_container
-    image: localstack/localstack-full
-    restart: always
+    image: localstack/localstack:latest
     ports:
-      # vários serviços da AWS
-      - "4566:4566"
+      - '4566:4566'
     environment:
-      - LAMBDA_EXECUTOR=local
-      - LAMBDA_REMOTE_DOCKER=false
+      - EDGE_PORT=4566
       - DOCKER_HOST=unix:///var/run/docker.sock
+      - SERVICES=sqs
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   mysql:
@@ -19,7 +17,6 @@ services:
     environment:
       MYSQL_USER: admin
       MYSQL_PASSWORD: admin
-      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: local
   phpmyadmin:
     image: phpmyadmin/phpmyadmin

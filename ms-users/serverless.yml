@@ -1,6 +1,4 @@
-# This template is only for use the G4 Tech.
-
-service: MS-SERVERLESS-EXAMPLE
+service: ms-users
 
 plugins:
   - serverless-offline
@@ -17,16 +15,17 @@ provider:
   region: us-east-1 # <- Region deploy this micro service
   environment:
     STAGE: ${opt:stage, 'local'}
-    DB_PORT: '5432'
-    DB_NAME: 'local'
-    DB_USER: 'admin'
-    DB_PASSWORD: 'admin'
-    DB_HOST_WRITE: 'localhost'
-    DB_HOST_READ: 'localhost'
+    DATABASE_PORT: 3306
+    DATABASE_NAME: 'local'
+    DATABASE_USERNAME: 'admin'
+    DATABASE_PASSWORD: 'admin'
+    DATABASE_HOST: 'localhost'
+    DATABASE_POOL_MIN: 0
+    DATABASE_POOL_MAX: 100
+    DATABASE_POOL_IDLE: 10000
 
 resources:
   Resources:
-    # This response is needed for custom authorizer failures cors support ¯\_(ツ)_/¯
     GatewayResponse:
       Type: 'AWS::ApiGateway::GatewayResponse'
       Properties:
@@ -100,6 +99,4 @@ custom:
     apiType: rest
     createRoute53Record: false
   bundle:
-    ignorePackages:
-      - pg-native # <-- Necessarie because package pgSql not imported in build project
-    linting: false # <-- CHANGE TRUE IN MODE PROD
+    linting: false

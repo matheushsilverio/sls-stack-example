@@ -1,9 +1,7 @@
-import UserRepository from '../../data/repositories/UserRepository';
-
 export default class GetAllUsersUseCase {
   constructor(userRepository) {
     /**
-     * @type {UserRepository}
+     * @type {import("../../data/repositories/UserRepository").default}
      */
     this.userRepository = userRepository;
   }

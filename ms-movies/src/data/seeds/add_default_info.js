@@ -36,14 +36,14 @@ async function moviesSeed(knex) {
         'reviews_from_critics',
       ]),
     );
-  let count = 0;
+  let count = 50000;
   for await (let chunk of readStream) {
-    if (count < 1500) {
-      count++;
+    count++;
+    if (count > 77000 && count < 78000) {
       let movie = chunk;
       movie.date_published = new Date(movie.date_published);
       movies.push(movie);
-      console.log(movie.imdb_title_id);
+      console.log(movie.title);
       await knex('movies').insert(movie);
     }
   }
